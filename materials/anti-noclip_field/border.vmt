@@ -1,0 +1,9 @@
+"UnlitGeneric"
+{
+	"$basetexture" "anti-noclip_field/border"
+	"$surfaceprop" "Metal"
+	"$translucent" 1
+	"$model" 1
+	"$nocull" 1
+	"%keywords" "ancf grocel"
+}
