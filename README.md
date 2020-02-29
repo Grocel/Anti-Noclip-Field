@@ -10,13 +10,15 @@ The Anti-Noclip Field is available on the Steam Workshop! Go to [its Workshop pa
 
 ## Recommended addons
 1. [Wiremod][] for Wiremod functionalities.
-1. [PermaProps][] for saving the fields permanently.
+2. [PermaProps][] for saving the fields permanently.
 
 ## How to use
 You spawn the an Anti-Noclip Field with the toolgun. You find this tool in the 'Construction' section of your tool menu.
 
 The settings in the toolgun have tooltips, mouse over them to see them.
 They may help you if you need to know something about an option.
+
+<img alt="Tool Menu Preview" style="border-width:0" src="https://i.imgur.com/OtgiBKp.png" />
 
 # Features
 - Blocks players noclip inside an anti-noclip area.
