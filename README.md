@@ -71,13 +71,6 @@ You can even protect these areas from the outside.
 [Garry's Mod]: <http://garrysmod.com/>
 [Wiremod]: <https://github.com/wiremod/wire>
 [PermaProps]: <https://github.com/MalboroDEV/PermaProps>
-[GM_BASS3]: <https://gmod.facepunch.com/f/gmodaddon/jina/gm-bass3-A-cross-plattform-shared-Lua-API-to-BASS/1/>
-[workshop]: <http://steamcommunity.com/sharedfiles/filedetails/?id=246756300>
-
-[Web Radio]: <http://steamcommunity.com/sharedfiles/filedetails/?id=314470705>
-[PatchPlay]: <http://steamcommunity.com/sharedfiles/filedetails/?id=250792180>
-[NM Prop Pack]: <http://steamcommunity.com/sharedfiles/filedetails/?id=605223544>
-[Fallout 3 Jukebox Model]: <http://steamcommunity.com/sharedfiles/filedetails/?id=529954000>
-[Minecraft SWEP]: <http://steamcommunity.com/sharedfiles/filedetails/?id=116592647>
+[workshop]: <https://steamcommunity.com/sharedfiles/filedetails/?id=165559580>
 
 [CPPI]: <http://ulyssesmod.net/archive/CPPI_v1-3.pdf>
