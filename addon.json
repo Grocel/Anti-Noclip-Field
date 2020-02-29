@@ -1,6 +1,6 @@
 {
-"title" : "Anti-Noclip Field",
-"type" : "tool",
-"tags" : ["build"],
-"ignore" : ["*.git*","*.svn*","*.txt","*.bat","*.html","bin/*","noupload/*"]
+	"title" : "Anti-Noclip-Field",
+	"type" : "tool",
+	"tags" : ["build"],
+	"ignore" : ["*.git*","*.svn*","*.txt","*.bat","*.html","*.gma","*.zip","bin/*","noupload/*","*.md","LICENSE", "git-*"]
 }
