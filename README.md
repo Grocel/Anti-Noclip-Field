@@ -35,13 +35,11 @@ If you an admin you can also disallow these actions:
 - Picking up props
 - Killing or damaging themselves
 - Killing or demaging others or props
+- Options to enable protection from outside
 
 ## Additional Notes
-If you try to disallow them as a non-admin it wont work.
+If you try to disallow the above options as a non-admin it wont work.
 Bypassing by duping, won't work either. (Please report exploits if you find them)
-
-It's nice if you want to build an effective prison for example.
-You can even protect these areas from the outside.
 
 # ConVars and ConCommands
 
