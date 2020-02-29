@@ -25,7 +25,7 @@ local VERSIONSTR = VERSIONSTR
 ANCF.Addonname = "Anti-Noclip Field:\n"
 ANCF.ErrorString = nil
 
-if ( VERSION < 160706 and VERSION > 50 ) then
+if ( VERSION < 200120 and VERSION > 5 ) then
 	local ver = VERSIONSTR or VERSION or 0
 	local vertext = "(Version: " .. ver .. ")"
 
