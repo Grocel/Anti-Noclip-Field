@@ -56,12 +56,13 @@ end
 
 function ENT:UpdateShape()
 	local Parent = self:GetParent()
+	if SERVER then
 	if !IsValid( Parent ) then
 		self:Remove()
 
 		return
 	end
-
+	end
 	self.ControlEnt = Parent
 	local shape = Parent:GetShapeInt()
 
@@ -88,6 +89,7 @@ end
 
 function ENT:OnRemove()
 	if !IsValid( self.ControlEnt ) then return end
-
+	if SERVER then
 	self.ControlEnt:Remove()
+	end
 end
