@@ -60,8 +60,9 @@ function ENT:UpdateShape()
 	if !IsValid( Parent ) then
 		if SERVER then
 			self:Remove()
-			return
 		end
+
+		return
 	end
 
 	self.ControlEnt = Parent
