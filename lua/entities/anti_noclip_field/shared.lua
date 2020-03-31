@@ -57,8 +57,8 @@ end
 function ENT:UpdateShape()
 	local Parent = self:GetParent()
 
-	if SERVER then
-		if !IsValid( Parent ) then
+	if !IsValid( Parent ) then
+		if SERVER then
 			self:Remove()
 			return
 		end
