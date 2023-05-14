@@ -1,32 +1,29 @@
+local AddCSLuaFile = AddCSLuaFile
+local include = include
+local IsValid = IsValid
+local ents = ents
+local bit = bit
+local pairs = pairs
+local duplicator = duplicator
+
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
-include( 'shared.lua' )
+include( "shared.lua" )
 
 ENT.WireDebugName = ENT.PrintName
 local ANCF = ANCF or {}
 
 local WireLib = WireLib
-local bit = bit
-local duplicator = duplicator
-local ents = ents
-local os = os
-
-local AddCSLuaFile = AddCSLuaFile
-local IsValid = IsValid
 local Wire_CreateInputs = Wire_CreateInputs
 local Wire_CreateOutputs = Wire_CreateOutputs
 local Wire_Remove = Wire_Remove
 local Wire_Restored = Wire_Restored
 local Wire_TriggerOutput = Wire_TriggerOutput
-local include = include
-local pairs = pairs
 
-local MOVETYPE_VPHYSICS = MOVETYPE_VPHYSICS
-local SOLID_VPHYSICS = SOLID_VPHYSICS
 local WireAddon = WireAddon
 
 function ENT:ServerInitialize()
-	if !ANCF.Installed then
+	if not ANCF.Installed then
 		self:Remove()
 
 		return
@@ -63,15 +60,15 @@ function ENT:ServerThink()
 		self:SetSizeInt( maxsize )
 	end
 
-	if !WireAddon then return end
-	if !self.DisabledChanged then return end
+	if not WireAddon then return end
+	if not self.DisabledChanged then return end
 
-	Wire_TriggerOutput( self, "On", !self:GetDisabledBool() and 1 or 0 )
+	Wire_TriggerOutput( self, "On", not self:GetDisabledBool() and 1 or 0 )
 end
 
 function ENT:CreateField()
 	local ent = ents.Create( "anti_noclip_field" )
-	if !IsValid( ent ) then return end
+	if not IsValid( ent ) then return end
 
 	local pos = self:GetPos()
 	local min = self:OBBMins()
@@ -95,14 +92,14 @@ function ENT:SetFlag( bitdigit, bool )
 
 	local flags = bit.tobit( self:GetFlagsInt() )
 
-	if ( !bool ) then
+	if not bool then
 		if ( self:GetFlag( bitdigit ) ) then
-			flags = flags - BIT // set bit to 0
+			flags = flags - BIT -- set bit to 0
 		else
-			return // do nothing
+			return -- do nothing
 		end
 	else
-		flags = bit.bor( flags, ( bool == true ) and BIT or 0 ) // set bit to 1
+		flags = bit.bor( flags, ( bool == true ) and BIT or 0 ) -- set bit to 1
 	end
 
 	self:SetFlagsInt( bit.tobit( flags ) )
@@ -117,20 +114,20 @@ function ENT:SetOutsideProtectBool( bool )
 end
 
 for index, setting in pairs( ANCF.SettingsNames or {} ) do
-	ENT["SetDisable"..setting.funcname.."Bool"] = function( self, bool )
+	ENT["SetDisable" .. setting.funcname .. "Bool"] = function( self, bool )
 		self:SetFlag( index + 1, bool )
 	end
 end
 
-// The wire remove, dupe and restore functions
+-- The wire remove, dupe and restore functions
 function ENT:OnRemove()
-	if !ANCF.Installed then return end
+	if not ANCF.Installed then return end
 
 	if WireAddon then
 		Wire_Remove( self )
 	end
 
-	if !self.GetFieldEnt then return end
+	if not self.GetFieldEnt then return end
 	local Field = self:GetFieldEnt()
 	if IsValid( Field ) then
 		Field:Remove()
@@ -138,7 +135,7 @@ function ENT:OnRemove()
 
 	if self.InsideEntities then
 		for ent, _ in pairs(self.InsideEntities) do
-			if !IsValid( ent ) then
+			if not IsValid( ent ) then
 				self.InsideEntities[ent or NULL] = nil
 
 				continue
@@ -164,26 +161,26 @@ function ENT:PermaPropLoad(data)
 end
 
 function ENT:OnRestore()
-	if !WireAddon then return end
+	if not WireAddon then return end
 	Wire_Restored( self )
 end
 
 function ENT:BuildDupeInfo()
-	if !WireAddon then return end
+	if not WireAddon then return end
 
 	return WireLib.BuildDupeInfo( self )
 end
 
 function ENT:ApplyDupeInfo( ply, ent, info, GetEntByID )
-	if !WireAddon then return end
+	if not WireAddon then return end
 
 	WireLib.ApplyDupeInfo( ply, ent, info, GetEntByID )
 end
 
 function ENT:PreEntityCopy()
-	if !WireAddon then return end
+	if not WireAddon then return end
 
-	//build the DupeInfo table and save it as an entity mod
+	-- build the DupeInfo table and save it as an entity mod
 	local DupeInfo = self:BuildDupeInfo()
 	if ( DupeInfo ) then
 		duplicator.StoreEntityModifier( self, "WireDupeInfo", DupeInfo )
@@ -191,17 +188,17 @@ function ENT:PreEntityCopy()
 end
 
 function ENT:PostEntityPaste( Player, Ent, CreatedEntities )
-	if !WireAddon then return end
+	if not WireAddon then return end
 
-	//apply the DupeInfo
+	-- apply the DupeInfo
 	if ( Ent.EntityMods and Ent.EntityMods.WireDupeInfo ) then
 		Ent:ApplyDupeInfo( Player, Ent, Ent.EntityMods.WireDupeInfo, function( id ) return CreatedEntities[id] end )
 	end
 end
 
 function ENT:TriggerInput( name, value )
-	if !WireAddon then return end
-	if !ANCF.Installed then return end
+	if not WireAddon then return end
+	if not ANCF.Installed then return end
 
 	if ( name == "On" ) then
 		self:SetDisabledBool( value <= 0 )

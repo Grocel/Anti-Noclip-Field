@@ -1,43 +1,34 @@
-// Meoowe made the original ("Noclip Field") years ago.
-// It broke after the GMod 13 Update and the author isn't reachable.
-// So I (Grocel) fixed all bugs and added some more features.
-// It also takes care of the new GMod 13 features.
+-- Meoowe made the original ("Noclip Field") years ago.
+-- It broke after the GMod 13 Update and the author isn't reachable.
+-- So I (Grocel) fixed all bugs and added some more features.
+-- It also takes care of the new GMod 13 features.
+-- The code has be completely overhauled from the original.
+
+local ents = ents
+local IsValid = IsValid
+local CreateConVar = CreateConVar
+local game = game
+local math = math
+local isentity = isentity
+local util = util
+local hook = hook
+local pairs = pairs
+local debug = debug
+local isfunction = isfunction
+local net = net
+local ipairs = ipairs
+local CurTime = CurTime
+
+local PropCore = PropCore
+local PermaProps = PermaProps
 
 local ANCF = ANCF or {}
 
-if !ANCF.Installed then return end
-
-local PropCore = PropCore
-local debug = debug
-local ents = ents
-local game = game
-local hook = hook
-local math = math
-local net = net
-local util = util
-
-local Color = Color
-local CreateConVar = CreateConVar
-local CurTime = CurTime
-local Entity = Entity
-local IsValid = IsValid
-local Player = Player
-local pairs = pairs
-
-local CLIENT = CLIENT
-local FCVAR_ARCHIVE = FCVAR_ARCHIVE
-local FCVAR_GAMEDLL = FCVAR_GAMEDLL
-local FCVAR_NOTIFY = FCVAR_NOTIFY
-local FCVAR_REPLICATED = FCVAR_REPLICATED
-local FCVAR_SERVER_CAN_EXECUTE = FCVAR_SERVER_CAN_EXECUTE
-local MOVETYPE_NONE = MOVETYPE_NONE
-local SERVER = SERVER
-local SOLID_NONE = SOLID_NONE
-
+if not ANCF.Installed then return end
 
 local AntiNoclipFields = {}
 function ANCF.Update()
-	if !ANCF.Installed then
+	if not ANCF.Installed then
 		AntiNoclipFields = {}
 
 		return
@@ -47,15 +38,15 @@ function ANCF.Update()
 end
 
 ANCF.SettingsNames = {
-	{ // Noclip
-		name 		= "noclip", // Name of the setting
-		funcname 	= "Noclip", // Name of get and set functions in the entity
-		lang 		= { "Block noclip", "Nocliping will be blocked." }, // language data
-		ConVar 		= "1", // Default var of the ConVar
-		needadmin	= false, // Adminonly?
+	{ -- Noclip
+		name 		= "noclip", -- Name of the setting
+		funcname 	= "Noclip", -- Name of get and set functions in the entity
+		lang 		= { "Block noclip", "Nocliping will be blocked." }, -- language data
+		ConVar 		= "1", -- Default var of the ConVar
+		needadmin	= false, -- Adminonly?
 	},
 
-	{ // Spawn
+	{ -- Spawn
 		name 		= "spawn",
 		funcname 	= "Spawn",
 		lang 		= { "Block spawning objects", "Spawning objects will be blocked." },
@@ -63,7 +54,7 @@ ANCF.SettingsNames = {
 		needadmin	= true,
 	},
 
-	{ // Tools
+	{ -- Tools
 		name 		= "tools",
 		funcname 	= "Tools",
 		lang 		= { "Block tools", "Using the toolgun will be blocked." },
@@ -71,7 +62,7 @@ ANCF.SettingsNames = {
 		needadmin	= true,
 	},
 
-	{ // Prop drive
+	{ -- Prop drive
 		name 		= "drive",
 		funcname 	= "Drive",
 		lang 		= { "Block prop drive", "Using prop drive will be blocked." },
@@ -79,7 +70,7 @@ ANCF.SettingsNames = {
 		needadmin	= true,
 	},
 
-	{ // Entity property
+	{ -- Entity property
 		name 		= "property",
 		funcname 	= "Property",
 		lang 		= { "Block changing properties", "Changing entity properties will be blocked." },
@@ -87,7 +78,7 @@ ANCF.SettingsNames = {
 		needadmin	= true,
 	},
 
-	{ // Physgun
+	{ -- Physgun
 		name 		= "physgun",
 		funcname 	= "Physgun",
 		lang 		= { "Block physgun ", "Using the physgun will be blocked." },
@@ -95,7 +86,7 @@ ANCF.SettingsNames = {
 		needadmin	= true,
 	},
 
-	{ // Gravitygun
+	{ -- Gravitygun
 		name 		= "gravitygun",
 		funcname 	= "Gravitygun",
 		lang 		= { "Block gravitygun", "Using the gravitygun will be blocked." },
@@ -103,7 +94,7 @@ ANCF.SettingsNames = {
 		needadmin	= true,
 	},
 
-	{ // +USE pickup
+	{ -- +USE pickup
 		name 		= "pickup",
 		funcname 	= "Pickup",
 		lang 		= { "Block pickup", "Blocks picking up props by pressing the use key." },
@@ -111,7 +102,7 @@ ANCF.SettingsNames = {
 		needadmin	= true,
 	},
 
-	{ // Vehicle
+	{ -- Vehicle
 		name 		= "vehicle",
 		funcname 	= "Vehicle",
 		lang 		= { "Block vehicles", "Entering and driving vehicles will be blocked. You will be kicked out." },
@@ -119,7 +110,7 @@ ANCF.SettingsNames = {
 		needadmin	= true,
 	},
 
-	{ // Flashlight
+	{ -- Flashlight
 		name 		= "flashlight",
 		funcname 	= "Flashlight",
 		lang 		= { "Block flashlights", "You will not be able to use your Flashlights." },
@@ -127,7 +118,7 @@ ANCF.SettingsNames = {
 		needadmin	= true,
 	},
 
-	{ // Suicide
+	{ -- Suicide
 		name 		= "suicide",
 		funcname 	= "Suicide",
 		lang 		= { "Block suicides", "You will not be able to suicide or damage yourself." },
@@ -135,7 +126,7 @@ ANCF.SettingsNames = {
 		needadmin	= true,
 	},
 
-	{ // Damaging
+	{ -- Damaging
 		name 		= "damage",
 		funcname 	= "Damage",
 		lang 		= { "Block damage", "You will not be able to damage the entities." },
@@ -143,7 +134,7 @@ ANCF.SettingsNames = {
 		needadmin	= true,
 	},
 
-	{ // Godmode
+	{ -- Godmode
 		name 		= "godmode",
 		funcname 	= "Godmode",
 		lang 		= { "Disable godmode", "Your godmode will be disabled. You will not be able to turn it on." },
@@ -153,9 +144,9 @@ ANCF.SettingsNames = {
 }
 
 function ANCF.IsValidEntity( ent )
-	if !ANCF.Installed then return false end
+	if not ANCF.Installed then return false end
 
-	if !IsValid( ent ) then return false end
+	if not IsValid( ent ) then return false end
 	if ent:IsWorld() then return false end
 	if SERVER then
 		if ent:IsConstraint() then return false end
@@ -199,14 +190,14 @@ function ANCF.GetRecheckTime()
 end
 
 local function RemoveInValid( i )
-	if !ANCF.Installed then return false end
+	if not ANCF.Installed then return false end
 
-	if !i then
+	if not i then
 		return false
 	end
 
 	if IsValid( AntiNoclipFields[i] ) then
-		if !AntiNoclipFields[i].GetDisabledBool then
+		if not AntiNoclipFields[i].GetDisabledBool then
 			return false
 		end
 		if AntiNoclipFields[i]:GetDisabledBool() then
@@ -221,94 +212,94 @@ local function RemoveInValid( i )
 end
 
 local function IsInRange( ancf, pos )
-	if !ANCF.Installed then return false end
+	if not ANCF.Installed then return false end
 
 	return ancf:IsVecInField( pos )
 end
 
 local function IsInField( ancf, ent )
-	if !ANCF.Installed then return false end
+	if not ANCF.Installed then return false end
 
 	return ent:ANCF_GetInField() and IsInRange( ancf, ent:GetPos() )
 end
 
 local function GetOwner( ent )
-	if !ANCF.Installed then return nil end
-	if !IsValid(ent) then return nil end
+	if not ANCF.Installed then return nil end
+	if not IsValid(ent) then return nil end
 
 	return ent:ANCF_GetOwner()
 end
 
 local function IsBlockedInside( ancf, insidePlOrEnt, funcname, allowforall )
-	if !allowforall and !ancf:IsValidAdminOwner() then return false end
-	if !IsValid(insidePlOrEnt) then return false end
+	if not allowforall and not ancf:IsValidAdminOwner() then return false end
+	if not IsValid(insidePlOrEnt) then return false end
 
 	if insidePlOrEnt:IsPlayer() then
-		if !ancf:IsPlValidRange(insidePlOrEnt) then return false end
+		if not ancf:IsPlValidRange(insidePlOrEnt) then return false end
 	else
 		local owner = GetOwner(insidePlOrEnt)
 
 		if IsValid(owner) then
-			if !ancf:IsPlValid(owner) then return false end
+			if not ancf:IsPlValid(owner) then return false end
 		end
 
-		if !IsInField(ancf, insidePlOrEnt) then return false end
+		if not IsInField(ancf, insidePlOrEnt) then return false end
 	end
 
-	local func = ancf["GetDisable"..funcname.."Bool"]
-	if !func then return false end
+	local func = ancf["GetDisable" .. funcname .. "Bool"]
+	if not func then return false end
 
 	return func( ancf )
 end
 
 local function IsBlockedOutside( ancf, outsidePlOrEnt, funcname, insideEntOrPos )
-	if !ancf:GetOutsideProtectBool() then return false end
-	if !ancf:IsValidAdminOwner() then return false end
-	if !IsValid(outsidePlOrEnt) then return false end
+	if not ancf:GetOutsideProtectBool() then return false end
+	if not ancf:IsValidAdminOwner() then return false end
+	if not IsValid(outsidePlOrEnt) then return false end
 
 	local outsideOwner = GetOwner(outsidePlOrEnt)
 
 	if IsValid(outsideOwner) then
-		if !ancf:IsPlValid(outsideOwner) then return false end
+		if not ancf:IsPlValid(outsideOwner) then return false end
 	end
 
 	if isentity(insideEntOrPos) then
 		if IsValid(insideEntOrPos) then
-			if !IsInField(ancf, insideEntOrPos) then return false end
+			if not IsInField(ancf, insideEntOrPos) then return false end
 		end
 
 		insideEntOrPos = nil
 	end
 
 	if insideEntOrPos then
-		if !IsInRange( ancf, insideEntOrPos ) then return false end
+		if not IsInRange( ancf, insideEntOrPos ) then return false end
 	end
 
-	local func = ancf["GetDisable"..funcname.."Bool"]
-	if !func then return false end
+	local func = ancf["GetDisable" .. funcname .. "Bool"]
+	if not func then return false end
 
 	return func( ancf )
 end
 
-// Block E2 too
+-- Block E2 too
 if SERVER then
 	util.AddNetworkString( "__ANCF_InField" )
 
-	// Block spawning PropCore props
+	-- Block spawning PropCore props
 	local PropCore_CreateProp = nil
 	hook.Add( "OnEntityCreated", "AntiNoclipField_E2Block", function()
-		if !WireAddon or PropCore_CreateProp then
+		if not WireAddon or PropCore_CreateProp then
 			hook.Remove( "OnEntityCreated", "AntiNoclipField_E2Block" )
 			return
 		end
 
-		if !PropCore or !PropCore.CreateProp then return end
+		if not PropCore or not PropCore.CreateProp then return end
 
 		PropCore_CreateProp = PropCore.CreateProp
 
 		function PropCore.CreateProp( self, model, pos, ... )
 			for i, ancf in pairs( AntiNoclipFields ) do
-				if !RemoveInValid( i ) then continue end
+				if not RemoveInValid( i ) then continue end
 
 				local pl = self.player
 
@@ -332,24 +323,24 @@ local _R = debug.getregistry()
 local ENT = _R.Entity
 
 function ENT:ANCF_GetGrabbedBy()
-	if !ANCF.IsValidEntity( self ) then return end
+	if not ANCF.IsValidEntity( self ) then return end
 
 	return self.__ancf_grabbedby
 end
 
 function ENT:ANCF_GetGrabbed()
-	if !ANCF.IsValidEntity( self ) then return end
+	if not ANCF.IsValidEntity( self ) then return end
 
 	return self.__ancf_grabbed
 end
 
 function ENT:ANCF_GetGrabbedWith()
-	if !ANCF.IsValidEntity( self ) then return end
+	if not ANCF.IsValidEntity( self ) then return end
 
 	return self.__ancf_grabbed_with
 end
 function ENT:ANCF_Clear()
-	if !ANCF.IsValidEntity( self ) then return end
+	if not ANCF.IsValidEntity( self ) then return end
 
 	self.__ancf_grabbedby = nil
 	self.__ancf_grabbed = nil
@@ -357,10 +348,10 @@ function ENT:ANCF_Clear()
 end
 
 function ENT:ANCF_DisableGodmode( bool )
-	if !ANCF.IsValidEntity( self ) then return end
+	if not ANCF.IsValidEntity( self ) then return end
 	if (CLIENT) then return end
 
-	if !self:IsPlayer() then return end
+	if not self:IsPlayer() then return end
 
 	bool = bool or false
 	local godmode = self:HasGodMode() or false
@@ -385,7 +376,7 @@ function ENT:ANCF_DisableGodmode( bool )
 end
 
 function ENT:ANCF_SetInField( bool )
-	if !ANCF.IsValidEntity( self ) then return end
+	if not ANCF.IsValidEntity( self ) then return end
 
 	if bool then
 		self.__ancf_infield = true
@@ -395,19 +386,19 @@ function ENT:ANCF_SetInField( bool )
 end
 
 function ENT:ANCF_GetInField()
-	if !ANCF.IsValidEntity( self ) then return false end
+	if not ANCF.IsValidEntity( self ) then return false end
 
 	return self.__ancf_infield or false
 end
 
 function ENT:ANCF_GetOwner()
-	if !ANCF.IsValidEntity( self ) then return nil end
+	if not ANCF.IsValidEntity( self ) then return nil end
 	if self:IsPlayer() then return self end
 
 	local realpl = nil
 
 	if isfunction(self.CPPIGetOwner) then
-		-- Some authors can't follow standards...
+		-- Some authors can't follow standards ...
 		local pl, id = self:CPPIGetOwner()
 
 		if not pl or isentity( pl ) then
@@ -419,11 +410,11 @@ function ENT:ANCF_GetOwner()
 		end
 	end
 
-	if !IsValid(realpl) then
+	if not IsValid(realpl) then
 		realpl = self.__ancf_owner
 	end
 
-	if !IsValid(realpl) then
+	if not IsValid(realpl) then
 		realpl = self:GetOwner()
 	end
 
@@ -435,9 +426,9 @@ function ENT:ANCF_GetOwner()
 end
 
 function ENT:ANCF_SetOwner( ent )
-	if !ANCF.IsValidEntity( self ) then return end
+	if not ANCF.IsValidEntity( self ) then return end
 	if self:IsPlayer() then return end
-	if !IsValid(ent) then return end
+	if not IsValid(ent) then return end
 
 	self.__ancf_owner = ent
 end
@@ -448,8 +439,8 @@ if CLIENT then
 		local self = net.ReadEntity()
 		local ent = net.ReadEntity()
 
-		if !IsValid( self ) then return end
-		if !IsValid( ent ) then return end
+		if not IsValid( self ) then return end
+		if not IsValid( ent ) then return end
 		local Entered = ( net.ReadBit() == 1 )
 
 		if Entered then
@@ -464,13 +455,13 @@ if CLIENT then
 	end )
 end
 
-// Set Owner of spawned objects
+-- Set Owner of spawned objects
 local function AntiNoclipField_EntityOwner(pl, ...)
-	if !IsValid(pl) then
+	if not IsValid(pl) then
 		return
 	end
 
-	local ent =  {...}
+	local ent =  { ...}
 
 	for k, v in ipairs(ent) do
 		if isentity(v) and IsValid(v) then
@@ -479,7 +470,7 @@ local function AntiNoclipField_EntityOwner(pl, ...)
 		end
 	end
 
-	if !IsValid(ent) then
+	if not IsValid(ent) then
 		return
 	end
 
@@ -496,13 +487,13 @@ hook.Add( "PlayerSpawnedSWEP", "AntiNoclipField_EntityOwner", AntiNoclipField_En
 hook.Add( "PlayerSpawnedVehicle", "AntiNoclipField_EntityOwner", AntiNoclipField_EntityOwner )
 
 local function OnField( ancf, ent )
-	if !IsValid( ent ) then
+	if not IsValid( ent ) then
 		ancf.InsideEntities[ent or NULL] = nil
 
 		return
 	end
 
-	if !IsInField( ancf, ent ) and ancf.InsideEntities[ent] then
+	if not IsInField( ancf, ent ) and ancf.InsideEntities[ent] then
 		ancf.InsideEntities[ent] = nil
 
 		if ancf.OnFieldLeave then
@@ -518,8 +509,8 @@ local function AntiNoclipField_OnField()
 	if (CurTime() - oldtime) < ANCF.GetRecheckTime() then return end
 
 	for i, ancf in pairs( AntiNoclipFields ) do
-		if !RemoveInValid( i ) then continue end
-		if !ancf.InsideEntities then continue end
+		if not RemoveInValid( i ) then continue end
+		if not ancf.InsideEntities then continue end
 
 		for ent, _ in pairs( ancf.InsideEntities ) do
 			OnField( ancf, ent )
@@ -531,14 +522,14 @@ end
 
 hook.Add( "Think", "AntiNoclipField_OnField", AntiNoclipField_OnField )
 
-// Player Noclip Hook
-// Disable Noclip use in range
+-- Player Noclip Hook
+-- Disable Noclip use in range
 local function AntiNoclipField_PNC( pl, on )
-	if !IsValid( pl ) then return end
-	if !on then return end
+	if not IsValid( pl ) then return end
+	if not on then return end
 
 	for i, ancf in pairs( AntiNoclipFields ) do
-		if !RemoveInValid( i ) then continue end
+		if not RemoveInValid( i ) then continue end
 
 		if IsBlockedInside( ancf, pl, "Noclip", true ) then
 			return false
@@ -548,14 +539,14 @@ end
 
 hook.Add( "PlayerNoClip", "AntiNoclipField_PNC", AntiNoclipField_PNC )
 
-// Flashlight Hook
-// Disable Flashlight use in range
+-- Flashlight Hook
+-- Disable Flashlight use in range
 local function AntiNoclipField_UFL( pl, on )
-	if !IsValid( pl ) then return end
-	if !on then return end
+	if not IsValid( pl ) then return end
+	if not on then return end
 
 	for i, ancf in pairs( AntiNoclipFields ) do
-		if !RemoveInValid( i ) then continue end
+		if not RemoveInValid( i ) then continue end
 
 		if IsBlockedInside( ancf, pl, "Flashlight" ) then
 			return false
@@ -565,13 +556,13 @@ end
 
 hook.Add( "PlayerSwitchFlashlight", "AntiNoclipField_UFL", AntiNoclipField_UFL )
 
-// Player Spawn Hooks
-// Disable Spawning objects in range
+-- Player Spawn Hooks
+-- Disable Spawning objects in range
 local function AntiNoclipField_PSO( pl )
-	if !IsValid( pl ) then return end
+	if not IsValid( pl ) then return end
 
 	for i, ancf in pairs( AntiNoclipFields ) do
-		if !RemoveInValid( i ) then continue end
+		if not RemoveInValid( i ) then continue end
 
 		if IsBlockedInside( ancf, pl, "Spawn" ) then
 			return false
@@ -601,13 +592,13 @@ hook.Add( "PlayerSpawnSWEP", "AntiNoclipField_PSO", AntiNoclipField_PSO )
 hook.Add( "PlayerGiveSWEP", "AntiNoclipField_PSO", AntiNoclipField_PSO )
 hook.Add( "PlayerSpawnVehicle", "AntiNoclipField_PSO", AntiNoclipField_PSO )
 
-// Player Suicide Hook
-// Disable Suicide for players in range
+-- Player Suicide Hook
+-- Disable Suicide for players in range
 local function AntiNoclipField_CPS( pl, _, _, speed )
-	if !IsValid( pl ) then return end
+	if not IsValid( pl ) then return end
 
 	for i, ancf in pairs( AntiNoclipFields ) do
-		if !RemoveInValid( i ) then continue end
+		if not RemoveInValid( i ) then continue end
 
 		if IsBlockedInside( ancf, pl, "Suicide" ) then
 			return speed ~= nil
@@ -619,11 +610,11 @@ hook.Add( "CanPlayerSuicide", "AntiNoclipField_CPS", AntiNoclipField_CPS )
 hook.Add( "OnPlayerHitGround", "AntiNoclipField_CPS", AntiNoclipField_CPS )
 
 local function IsSuicide(target, dmginfo)
-	if !IsValid( target ) then return false end
-	if !target:IsPlayer() then return false end
+	if not IsValid( target ) then return false end
+	if not target:IsPlayer() then return false end
 
-	attacker = GetOwner(dmginfo:GetAttacker())
-	inflictor = GetOwner(dmginfo:GetInflictor())
+	local attacker = GetOwner(dmginfo:GetAttacker())
+	local inflictor = GetOwner(dmginfo:GetInflictor())
 
 	if IsValid(attacker) or IsValid(inflictor) then
 		if attacker ~= target and inflictor ~= target then
@@ -634,17 +625,17 @@ local function IsSuicide(target, dmginfo)
 	return true
 end
 
-// Player Damage Hook
-// Disable Suicide for players in range by shooting themselves
+-- Player Damage Hook
+-- Disable Suicide for players in range by shooting themselves
 local function AntiNoclipField_PDM( target, dmginfo )
-	if !IsValid( target ) then return end
+	if not IsValid( target ) then return end
 
-	if !IsSuicide(target, dmginfo) then
+	if not IsSuicide(target, dmginfo) then
 		return
 	end
 
 	for i, ancf in pairs( AntiNoclipFields ) do
-		if !RemoveInValid( i ) then continue end
+		if not RemoveInValid( i ) then continue end
 
 		if IsBlockedInside( ancf, target, "Suicide" ) then
 			dmginfo:SetDamage( 0 )
@@ -655,10 +646,10 @@ end
 
 hook.Add( "EntityTakeDamage", "AntiNoclipField_PDM", AntiNoclipField_PDM )
 
-// Player Damage Hook
-// Disable Damage for entities in range
+-- Player Damage Hook
+-- Disable Damage for entities in range
 local function AntiNoclipField_EDM( target, dmginfo )
-	if !IsValid( target ) then return end
+	if not IsValid( target ) then return end
 
 	local inflictor = GetOwner(dmginfo:GetInflictor())
 	local attacker = GetOwner(dmginfo:GetAttacker())
@@ -667,16 +658,16 @@ local function AntiNoclipField_EDM( target, dmginfo )
 		return
 	end
 
-	if !IsValid( inflictor ) then
+	if not IsValid( inflictor ) then
 		inflictor = attacker
 	end
 
-	if !IsValid( inflictor ) then
+	if not IsValid( inflictor ) then
 		return
 	end
 
 	for i, ancf in pairs( AntiNoclipFields ) do
-		if !RemoveInValid( i ) then continue end
+		if not RemoveInValid( i ) then continue end
 
 		if IsBlockedInside( ancf, inflictor, "Damage" ) then
 			dmginfo:SetDamage( 0 )
@@ -692,14 +683,14 @@ end
 
 hook.Add( "EntityTakeDamage", "AntiNoclipField_EDM", AntiNoclipField_EDM )
 
-// Pickup Hook
-// Disable +USE Pickup in range
+-- Pickup Hook
+-- Disable  + USE Pickup in range
 local function AntiNoclipField_APP( pl, ent )
-	if !IsValid( pl ) then return end
-	if IsValid( ent ) and ent:IsPlayer() then return end // Ignore Players
+	if not IsValid( pl ) then return end
+	if IsValid( ent ) and ent:IsPlayer() then return end -- Ignore Players
 
 	for i, ancf in pairs( AntiNoclipFields ) do
-		if !RemoveInValid( i ) then continue end
+		if not RemoveInValid( i ) then continue end
 
 		if IsBlockedInside( ancf, pl, "Pickup" ) then
 			return false
@@ -721,14 +712,14 @@ end
 hook.Add( "AllowPlayerPickup", "AntiNoclipField_APP", AntiNoclipField_APP )
 
 
-// Physgun Hooks
-// Disable physgun use in range
+-- Physgun Hooks
+-- Disable physgun use in range
 local function AntiNoclipField_PGU( pl, ent )
-	if !IsValid( pl ) then return end
-	if IsValid( ent ) and ent:IsPlayer() then return end // Ignore Players
+	if not IsValid( pl ) then return end
+	if IsValid( ent ) and ent:IsPlayer() then return end -- Ignore Players
 
 	for i, ancf in pairs( AntiNoclipFields ) do
-		if !RemoveInValid( i ) then continue end
+		if not RemoveInValid( i ) then continue end
 
 		if IsBlockedInside( ancf, pl, "Physgun" ) then
 			return false
@@ -750,14 +741,14 @@ end
 hook.Add( "PhysgunPickup", "AntiNoclipField_PGU", AntiNoclipField_PGU )
 hook.Add( "CanPlayerUnfreeze", "AntiNoclipField_PGU", AntiNoclipField_PGU )
 
-// Gravitygun Hooks
-// Disable gravitygun use in range
+-- Gravitygun Hooks
+-- Disable gravitygun use in range
 local function AntiNoclipField_GGU( pl, ent )
-	if !IsValid( pl ) then return end
-	if IsValid( ent ) and ent:IsPlayer() then return end // Ignore Players
+	if not IsValid( pl ) then return end
+	if IsValid( ent ) and ent:IsPlayer() then return end -- Ignore Players
 
 	for i, ancf in pairs( AntiNoclipFields ) do
-		if !RemoveInValid( i ) then continue end
+		if not RemoveInValid( i ) then continue end
 
 		if IsBlockedInside( ancf, pl, "Gravitygun" ) then
 			return false
@@ -779,13 +770,13 @@ end
 hook.Add( "GravGunPickupAllowed", "AntiNoclipField_GGU", AntiNoclipField_GGU )
 hook.Add( "GravGunPunt", "AntiNoclipField_GGU", AntiNoclipField_GGU )
 
-// Vehicle Hook
-// Disable vehicle use in range
+-- Vehicle Hook
+-- Disable vehicle use in range
 local function AntiNoclipField_CEV( pl, ent )
-	if !IsValid( pl ) then return end
+	if not IsValid( pl ) then return end
 
 	for i, ancf in pairs( AntiNoclipFields ) do
-		if !RemoveInValid( i ) then continue end
+		if not RemoveInValid( i ) then continue end
 
 		if IsBlockedInside( ancf, pl, "Vehicle" ) then
 			return false
@@ -799,13 +790,13 @@ end
 
 hook.Add( "CanPlayerEnterVehicle", "AntiNoclipField_CEV", AntiNoclipField_CEV )
 
-// Tools Hook
-// Disable Tool use in range
+-- Tools Hook
+-- Disable Tool use in range
 local function AntiNoclipField_CTG( pl, trace )
-	if !IsValid( pl ) then return end
+	if not IsValid( pl ) then return end
 
 	for i, ancf in pairs( AntiNoclipFields ) do
-		if !RemoveInValid( i ) then continue end
+		if not RemoveInValid( i ) then continue end
 
 		if IsBlockedInside( ancf, pl, "Tools" ) then
 			return false
@@ -825,14 +816,14 @@ local function AntiNoclipField_CTG( pl, trace )
 end
 hook.Add( "CanTool", "AntiNoclipField_CTG", AntiNoclipField_CTG )
 
-// Drive Hook
-// Disable Driving in range
+-- Drive Hook
+-- Disable Driving in range
 local function AntiNoclipField_CDO( pl, ent )
-	if !IsValid( pl ) then return end
-	if IsValid( ent ) and ent:IsPlayer() then return end // Ignore Players
+	if not IsValid( pl ) then return end
+	if IsValid( ent ) and ent:IsPlayer() then return end -- Ignore Players
 
 	for i, ancf in pairs( AntiNoclipFields ) do
-		if !RemoveInValid( i ) then continue end
+		if not RemoveInValid( i ) then continue end
 
 		if IsBlockedInside( ancf, pl, "Drive" ) then
 			return false
@@ -853,13 +844,13 @@ end
 
 hook.Add( "CanDrive", "AntiNoclipField_CDO", AntiNoclipField_CDO )
 
-// Property Hook
-// Disable Property in range
+-- Property Hook
+-- Disable Property in range
 local function AntiNoclipField_CPO( pl, property, ent )
-	if !IsValid( pl ) then return end
+	if not IsValid( pl ) then return end
 
 	for i, ancf in pairs( AntiNoclipFields ) do
-		if !RemoveInValid( i ) then continue end
+		if not RemoveInValid( i ) then continue end
 
 		if IsBlockedInside( ancf, pl, "Property" ) then
 			return false
@@ -887,12 +878,12 @@ local function AddPermaPropsSupport()
 		return
 	end
 
-	PermaProps.SpecialENTSSpawn['sent_anti_noclip_control'] = function(ent, ...)
-		return ent:PermaPropLoad(...)
+	PermaProps.SpecialENTSSpawn["sent_anti_noclip_control"] = function(ent, ...)
+		return ent:PermaPropLoad( ...)
 	end
 
-	PermaProps.SpecialENTSSave['sent_anti_noclip_control'] = function(ent, ...)
-		return ent:PermaPropSave(...)
+	PermaProps.SpecialENTSSave["sent_anti_noclip_control"] = function(ent, ...)
+		return ent:PermaPropSave( ...)
 	end
 end
 

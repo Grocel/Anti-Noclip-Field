@@ -1,26 +1,20 @@
+local AddCSLuaFile = AddCSLuaFile
+local isstring = isstring
+local hook = hook
+local ErrorNoHalt = ErrorNoHalt
+local istable = istable
+local type = type
+local isfunction = isfunction
+local error = error
+local debug = debug
+local table = table
+local resource = resource
+local include = include
+local collectgarbage = collectgarbage
+
 AddCSLuaFile()
 
 ANCF = {}
-local ANCF = ANCF
-local debug = debug
-local hook = hook
-local resource = resource
-local table = table
-
-local AddCSLuaFile = AddCSLuaFile
-local ErrorNoHalt = ErrorNoHalt
-local collectgarbage = collectgarbage
-local error = error
-local include = include
-local isfunction = isfunction
-local isstring = isstring
-local istable = istable
-local type = type
-
-local CLIENT = CLIENT
-local SERVER = SERVER
-local VERSION = VERSION
-local VERSIONSTR = VERSIONSTR
 
 ANCF.Addonname = "Anti-Noclip Field:\n"
 ANCF.ErrorString = nil
@@ -114,7 +108,7 @@ local function CheckLib( libname, funcname, datatype )
 		end
 
 		_G[libname] = nil -- Let's fuck that bad addon up
-		--We don't need those
+		-- We don't need those
 		tab.func = nil
 		tab.isvararg = nil
 		tab.nups = nil
@@ -160,7 +154,7 @@ end
 
 ANCF.Installed = true
 
-// Do not load when something is broken
+-- Do not load when something is broken
 if ( CheckLib( "debug" ) ) then
 	ANCF.Installed = nil
 end
@@ -186,7 +180,7 @@ if ( CheckLib( "table", "Copy" ) ) then
 	ANCF.Installed = nil
 end
 
-if ( !ANCF.Installed ) then return end
+if not ANCF.Installed then return end
 
 if SERVER then
 	if resource.AddWorkshop then

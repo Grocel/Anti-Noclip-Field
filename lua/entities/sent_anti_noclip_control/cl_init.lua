@@ -1,20 +1,19 @@
-include( 'shared.lua' )
+local include = include
+local CurTime = CurTime
+local math = math
+local pairs = pairs
+local IsValid = IsValid
+
+include( "shared.lua" )
 
 local ANCF = ANCF or {}
-local math = math
 
-local CurTime = CurTime
-local IsValid = IsValid
-local Model = Model
 local Wire_Render = Wire_Render
 local Wire_UpdateRenderBounds = Wire_UpdateRenderBounds
-local include = include
-local pairs = pairs
-
 local WIRE_CLIENT_INSTALLED = WIRE_CLIENT_INSTALLED
 
 function ENT:ClientInitialize()
-	if !ANCF.Installed then return end
+	if not ANCF.Installed then return end
 	ANCF.Update()
 end
 
@@ -29,7 +28,7 @@ end
 
 function ENT:Draw()
 	self:DrawModel()
-	if !ANCF.Installed then return end
+	if not ANCF.Installed then return end
 
 	if WIRE_CLIENT_INSTALLED then
 		Wire_Render( self )
@@ -37,10 +36,10 @@ function ENT:Draw()
 end
 
 function ENT:OnRemove()
-	if !ANCF.Installed then return end
+	if not ANCF.Installed then return end
 
 	for ent, _ in pairs( self.InsideEntities ) do
-		if !IsValid( ent ) then
+		if not IsValid( ent ) then
 			self.InsideEntities[ent or NULL] = nil
 
 			continue

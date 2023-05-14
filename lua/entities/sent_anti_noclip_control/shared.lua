@@ -1,3 +1,11 @@
+local IsValid = IsValid
+local Vector = Vector
+local CurTime = CurTime
+local util = util
+local bit = bit
+local pairs = pairs
+local game = game
+
 ENT.Type			= "anim"
 ENT.Base			= "base_anim"
 ENT.PrintName		= "Anti-Noclip Field Controller"
@@ -8,73 +16,57 @@ ENT.AdminOnly		= true
 ENT.RenderGroup		= RENDERGROUP_OPAQUE
 
 local ANCF = ANCF or {}
-local bit = bit
-local game = game
-local util = util
-
-local CurTime = CurTime
-local Entity = Entity
-local IsValid = IsValid
-local Player = Player
-local Vector = Vector
-local pairs = pairs
-local tobool = tobool
-
-local CLIENT = CLIENT
-local MOVETYPE_NOCLIP = MOVETYPE_NOCLIP
-local MOVETYPE_WALK = MOVETYPE_WALK
-local SERVER = SERVER
 
 local function Freeze( ent )
 	local phys = ent:GetPhysicsObject()
 
-	if !IsValid( phys ) then return end
+	if not IsValid( phys ) then return end
 
 	phys:EnableMotion( false )
 end
 
 local function UsesPhysgun( self, ply, ent )
-	if !ANCF.Installed then return false end
+	if not ANCF.Installed then return false end
 
-	if !self:GetDisablePhysgunBool() then return false end
+	if not self:GetDisablePhysgunBool() then return false end
 
 	if ent:ANCF_GetGrabbedWith() == "Physgun" then return true end
 	if ent:ANCF_GetGrabbedWith() == "Pickup" then return false end
 	if ent:ANCF_GetGrabbedWith() == "Gravitygun" then return false end
 
 	local weapon = ply:GetActiveWeapon()
-	if !IsValid(weapon) then return false end
+	if not IsValid(weapon) then return false end
 	if weapon:GetClass() ~= "weapon_physgun" then return false end
 
 	return true
 end
 local function UsesGravgun( self, ply, ent )
-	if !ANCF.Installed then return false end
+	if not ANCF.Installed then return false end
 
-	if !self:GetDisableGravitygunBool() then return false end
+	if not self:GetDisableGravitygunBool() then return false end
 
 	if ent:ANCF_GetGrabbedWith() == "Gravitygun" then return true end
 	if ent:ANCF_GetGrabbedWith() == "Physgun" then return false end
 	if ent:ANCF_GetGrabbedWith() == "Pickup" then return false end
 
 	local weapon = ply:GetActiveWeapon()
-	if !IsValid(weapon) then return false end
+	if not IsValid(weapon) then return false end
 	if weapon:GetClass() ~= "weapon_physcannon" then return false end
 
 	return true
 end
 
 local function UsesPickup( self, ply, ent )
-	if !ANCF.Installed then return false end
+	if not ANCF.Installed then return false end
 
-	if !self:GetDisablePickupBool() then return false end
+	if not self:GetDisablePickupBool() then return false end
 
 	if ent:ANCF_GetGrabbedWith() == "Pickup" then return true end
 	if ent:ANCF_GetGrabbedWith() == "Physgun" then return false end
 	if ent:ANCF_GetGrabbedWith() == "Gravitygun" then return false end
 
 	local weapon = ply:GetActiveWeapon()
-	if !IsValid(weapon) then return true end
+	if not IsValid(weapon) then return true end
 	if weapon:GetClass() == "weapon_physgun" then return false end
 	if weapon:GetClass() == "weapon_physcannon" then return false end
 
@@ -93,41 +85,41 @@ function ENT:Initialize()
 end
 
 function ENT:SetupDataTables()
-	//String
+	-- String
 
-	//Bool
+	-- Bool
 	self:NetworkVar( "Bool", 0, "DisabledBool" )
 	self:NetworkVar( "Bool", 1, "AffectOwnerBool" )
 	self:NetworkVar( "Bool", 2, "AffectAdminBool" )
 	self:NetworkVar( "Bool", 3, "DrawBordersBool" )
 	self:NetworkVar( "Bool", 4, "NoOwner" )
 
-	//Float
+	-- Float
 
-	//Int
+	-- Int
 	self:NetworkVar( "Int", 0, "SizeInt" )
 	self:NetworkVar( "Int", 1, "ShapeInt" )
 	self:NetworkVar( "Int", 2, "FlagsInt" )
-	//Vector
+	-- Vector
 
-	//Angle
+	-- Angle
 
-	//Entity
+	-- Entity
 	self:NetworkVar( "Entity", 0, "OwnerEnt" )
 	self:NetworkVar( "Entity", 1, "FieldEnt" )
 end
 
 function ENT:IsVecInField( pos )
-	if !ANCF.Installed then return false end
+	if not ANCF.Installed then return false end
 	if self:GetDisabledBool() then return false end
 
-	if !self.SearchRadiusSqr then return false end
+	if not self.SearchRadiusSqr then return false end
 
 	return ( pos - self:GetPos() ):LengthSqr() < self.SearchRadiusSqr
 end
 
 function ENT:OnFieldEnter( ent )
-	if !ANCF.Installed then return end
+	if not ANCF.Installed then return end
 
 	local IsNear = self:IsVecInField( ent:GetPos() )
 
@@ -140,7 +132,7 @@ function ENT:OnFieldEnter( ent )
 end
 
 function ENT:OnFieldLeave( ent )
-	if !ANCF.Installed then return end
+	if not ANCF.Installed then return end
 
 	ent:ANCF_SetInField( nil )
 	self.InsideEntities[ent] = nil
@@ -149,17 +141,17 @@ function ENT:OnFieldLeave( ent )
 end
 
 function ENT:OnField( ent )
-	if !ANCF.Installed then return end
-	if !self.GetFieldEnt then return end
+	if not ANCF.Installed then return end
+	if not self.GetFieldEnt then return end
 
 	local InField = ent:ANCF_GetInField()
 	local Field = self:GetFieldEnt()
 
-	if !self:IsVecInField( ent:GetPos() ) then
+	if not self:IsVecInField( ent:GetPos() ) then
 		return
 	end
 
-	if !InField then
+	if not InField then
 		if IsValid( Field ) then
 			Field:StartTouch( ent )
 		end
@@ -167,15 +159,15 @@ function ENT:OnField( ent )
 		return
 	end
 
-	if ent:IsPlayer() then // Player in Field
+	if ent:IsPlayer() then -- Player in Field
 		local pl = ent
-		if !self:IsPlValidRange( pl ) then return end
+		if not self:IsPlValidRange( pl ) then return end
 
 		if self:GetDisableNoclipBool() and pl:GetMoveType( MOVETYPE_NOCLIP ) then
 			pl:SetMoveType( MOVETYPE_WALK )
 		end
 
-		if !self:IsValidAdminOwner() then return end
+		if not self:IsValidAdminOwner() then return end
 
 		if self:GetDisableFlashlightBool() and pl:FlashlightIsOn() then
 			pl:Flashlight( false )
@@ -215,7 +207,7 @@ function ENT:OnField( ent )
 				pl:ANCF_Clear()
 			end
 		end
-	else // Prop in Field
+	else -- Prop in Field
 
 		if ent:IsVehicle() and self:GetDisableVehicleBool() then
 			local pl = ent:GetDriver()
@@ -257,9 +249,9 @@ function ENT:OnField( ent )
 end
 
 function ENT:Think()
-	if !ANCF.Installed then return end
-	if !self.GetSizeInt then return end
-	if !self.GetFieldEnt then return end
+	if not ANCF.Installed then return end
+	if not self.GetSizeInt then return end
+	if not self.GetFieldEnt then return end
 
 	local Size = self:GetSizeInt()
 	if self.oldsize ~= Size then
@@ -300,7 +292,7 @@ function ENT:Think()
 	end
 
 	local Field = self:GetFieldEnt()
-	if !IsValid( Field ) then return end
+	if not IsValid( Field ) then return end
 
 	if self.ShapeChanged then
 		Field.OriginalPhysmesh = nil
@@ -315,34 +307,34 @@ function ENT:Think()
 		self.SizeVector.y = Size
 		self.SizeVector.z = Size
 
-		self.SearchRadiusSqr = self.SizeVector:LengthSqr() // cube
+		self.SearchRadiusSqr = self.SizeVector:LengthSqr() -- cube
 		local Shape = self:GetShapeInt()
 
-		if Shape == 1 then // sphere
+		if Shape == 1 then -- sphere
 			self.SearchRadiusSqr = Size^2
 		end
 
-		if Shape == 2 then // cylinder
+		if Shape == 2 then -- cylinder
 			self.SizeVector.x = 0
 			self.SearchRadiusSqr = self.SizeVector:LengthSqr()
 		end
 
-		if Shape == 3 then // pyramid
+		if Shape == 3 then -- pyramid
 			self.SizeVector.z = 0
 			self.SearchRadiusSqr = self.SizeVector:LengthSqr()
 		end
 
-		if Shape == 4 then // cone
+		if Shape == 4 then -- cone
 			self.SearchRadiusSqr = Size^2
 		end
 	end
 
 	if self.DrawChanged then
-		Field:SetNoDraw( !Draw )
+		Field:SetNoDraw( not Draw )
 	end
 
-	Field:ANCF_SetInField( !Disabled )
-	self:ANCF_SetInField( !Disabled )
+	Field:ANCF_SetInField( not Disabled )
+	self:ANCF_SetInField( not Disabled )
 
 	if (CLIENT) then
 		self:SetNextClientThink( CurTime() + ANCF.GetRecheckTime() )
@@ -353,13 +345,13 @@ function ENT:Think()
 end
 
 function ENT:IsPlValid( pl )
-	if !ANCF.Installed then return false end
+	if not ANCF.Installed then return false end
 
 	if self:GetDisabledBool() then
 		return false
 	end
 
-	if !IsValid( pl ) or !pl:IsPlayer() then
+	if not IsValid( pl ) or not pl:IsPlayer() then
 		return false
 	end
 
@@ -367,11 +359,11 @@ function ENT:IsPlValid( pl )
 		return true
 	end
 
-	if pl:IsSuperAdmin() and !ANCF.IsBlockingSuperAdmin() then
+	if pl:IsSuperAdmin() and not ANCF.IsBlockingSuperAdmin() then
 		return false
 	end
 
-	if ANCF.IsAdminOnly() and !self:IsValidAdminOwner() then
+	if ANCF.IsAdminOnly() and not self:IsValidAdminOwner() then
 		return false
 	end
 
@@ -380,11 +372,11 @@ function ENT:IsPlValid( pl )
 
 	local owner = self:GetOwnerEnt()
 	if IsValid( owner ) then
-		if !self:GetAffectOwnerBool() and pl == owner then
+		if not self:GetAffectOwnerBool() and pl == owner then
 			return false
 		end
 
-		if pl:IsAdmin() and ( !self:GetAffectAdminBool() or !owner:IsAdmin() ) and !ANCF.IsFreeForAll() then
+		if pl:IsAdmin() and ( not self:GetAffectAdminBool() or not owner:IsAdmin() ) and not ANCF.IsFreeForAll() then
 			return false
 		end
 	end
@@ -393,11 +385,11 @@ function ENT:IsPlValid( pl )
 end
 
 function ENT:IsPlValidRange( pl )
-	if !self:IsPlValid( pl ) then
+	if not self:IsPlValid( pl ) then
 		return false
 	end
 
-	if !pl:ANCF_GetInField() or !self:IsVecInField( pl:GetPos() ) then
+	if not pl:ANCF_GetInField() or not self:IsVecInField( pl:GetPos() ) then
 		return false
 	end
 
@@ -419,13 +411,13 @@ function ENT:GetOutsideProtectBool()
 end
 
 for index, setting in pairs( ANCF.SettingsNames or {} ) do
-	ENT["GetDisable"..setting.funcname.."Bool"] = function( self )
+	ENT["GetDisable" .. setting.funcname .. "Bool"] = function( self )
 		return self:GetFlag( index + 1 )
 	end
 end
 
 function ENT:IsValidAdminOwner()
-	if !ANCF.Installed then return false end
+	if not ANCF.Installed then return false end
 	if game.SinglePlayer() then return true end
 	if ANCF.IsFreeForAll() then return true end
 
@@ -433,8 +425,8 @@ function ENT:IsValidAdminOwner()
 	if noowner then return true end
 
 	local owner = self:GetOwnerEnt()
-	if !IsValid( owner ) then
-		return self:GetAdminMode() // from a disconnected player
+	if not IsValid( owner ) then
+		return self:GetAdminMode() -- from a disconnected player
 	end
 
 	local admin = owner:IsAdmin()

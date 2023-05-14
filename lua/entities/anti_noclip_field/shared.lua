@@ -1,3 +1,8 @@
+local Model = Model
+local Color = Color
+local IsValid = IsValid
+local Vector = Vector
+
 ENT.Type			= "anim"
 ENT.Base			= "base_anim"
 ENT.PrintName		= "Anti-Noclip Field"
@@ -9,14 +14,6 @@ ENT.RenderGroup		= RENDERGROUP_TRANSLUCENT
 
 local ANCF = ANCF or {}
 
-local Color = Color
-local IsValid = IsValid
-local Model = Model
-local Vector = Vector
-
-local CLIENT = CLIENT
-local SERVER = SERVER
-
 local Models = {
 	[0] = Model( "models/anti-noclip_field/cube.mdl" ),
 	[1] = Model( "models/anti-noclip_field/sphere.mdl" ),
@@ -27,7 +24,7 @@ local Models = {
 
 local Color_Red = Color( 200, 0, 0 )
 function ENT:Initialize()
-	if !ANCF.Installed then
+	if not ANCF.Installed then
 		self:Remove()
 
 		return
@@ -39,25 +36,25 @@ function ENT:Initialize()
 end
 
 function ENT:SetupDataTables()
-	//String
+	-- String
 
-	//Bool
+	-- Bool
 
-	//Float
+	-- Float
 
-	//Int
+	-- Int
 
-	//Vector
+	-- Vector
 
-	//Angle
+	-- Angle
 
-	//Entity
+	-- Entity
 end
 
 function ENT:UpdateShape()
 	local Parent = self:GetParent()
 
-	if !IsValid( Parent ) then
+	if not IsValid( Parent ) then
 		if SERVER then
 			self:Remove()
 		end
@@ -90,7 +87,7 @@ function ENT:UpdateShape()
 end
 
 function ENT:OnRemove()
-	if !IsValid( self.ControlEnt ) then return end
+	if not IsValid( self.ControlEnt ) then return end
 
 	if SERVER then
 		self.ControlEnt:Remove()

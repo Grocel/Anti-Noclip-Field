@@ -1,22 +1,19 @@
+local include = include
+local IsValid = IsValid
+local LocalPlayer = LocalPlayer
+local util = util
+local Matrix = Matrix
+
 include( 'shared.lua' )
 
 local ANCF = ANCF or {}
-local util = util
-
-local IsValid = IsValid
-local LocalPlayer = LocalPlayer
-local Matrix = Matrix
-local Model = Model
-local Player = Player
-local tobool = tobool
-
 
 function ENT:DrawTranslucent()
-	if !ANCF.Installed then return end
-	if !IsValid( self.ControlEnt ) then return end
+	if not ANCF.Installed then return end
+	if not IsValid( self.ControlEnt ) then return end
 	if self.ControlEnt:GetDisabledBool() then return end
 
-	if ANCF.IsAdminOnly() and !self.ControlEnt:IsValidAdminOwner() then
+	if ANCF.IsAdminOnly() and not self.ControlEnt:IsValidAdminOwner() then
 		return
 	end
 

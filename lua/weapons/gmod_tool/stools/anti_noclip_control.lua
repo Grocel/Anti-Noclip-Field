@@ -1,44 +1,32 @@
+local pairs = pairs
+local cleanup = cleanup
+local language = language
+local CreateClientConVar = CreateClientConVar
+local CreateConVar = CreateConVar
+local Angle = Angle
+local IsValid = IsValid
+local math = math
+local Vector = Vector
+local constraint = constraint
+local ents = ents
+local Model = Model
+local table = table
+local duplicator = duplicator
+local util = util
+local undo = undo
+local tostring = tostring
+local tonumber = tonumber
+local IsUselessModel = IsUselessModel
+local vgui = vgui
+local LocalPlayer = LocalPlayer
+
 TOOL.Category		= "Construction"
 local TOOL_Class	= "anti_noclip_control"
-TOOL.Name			= "#Tool."..TOOL_Class..".name"
+TOOL.Name			= "#Tool." .. TOOL_Class .. ".name"
 TOOL.Command		= nil
 TOOL.ConfigName		= nil
 
 local ANCF = ANCF or {}
-local cleanup = cleanup
-local constraint = constraint
-local debugoverlay = debugoverlay
-local draw = draw
-local duplicator = duplicator
-local ents = ents
-local gui = gui
-local language = language
-local math = math
-local table = table
-local undo = undo
-local util = util
-local vgui = vgui
-
-local Angle = Angle
-local Color = Color
-local CreateClientConVar = CreateClientConVar
-local CreateConVar = CreateConVar
-local Entity = Entity
-local IsUselessModel = IsUselessModel
-local IsValid = IsValid
-local Label = Label
-local LocalPlayer = LocalPlayer
-local Model = Model
-local Player = Player
-local UTIL_IsUselessModel = UTIL_IsUselessModel
-local Vector = Vector
-local pairs = pairs
-local tonumber = tonumber
-local tostring = tostring
-
-local CLIENT = CLIENT
-local HUD_PRINTTALK = HUD_PRINTTALK
-local SERVER = SERVER
 
 local ShapeOptionsToString = {
 	[0] = "Cube",
@@ -62,54 +50,54 @@ local minshape = 0
 cleanup.Register( TOOL_Class )
 
 if CLIENT then
-	language.Add( "Undone_"..TOOL_Class, "Undone Anti-Noclip Field" )
-	language.Add( "SBoxLimit_"..TOOL_Class, "You've hit the Anti-Noclip Fields limit!" )
-	language.Add( "Cleanup_"..TOOL_Class, "Anti-Noclip Fields" )
-	language.Add( "Cleaned_"..TOOL_Class, "Cleaned up all Anti-Noclip Fields" )
+	language.Add( "Undone_" .. TOOL_Class, "Undone Anti-Noclip Field" )
+	language.Add( "SBoxLimit_" .. TOOL_Class, "You've hit the Anti-Noclip Fields limit!" )
+	language.Add( "Cleanup_" .. TOOL_Class, "Anti-Noclip Fields" )
+	language.Add( "Cleaned_" .. TOOL_Class, "Cleaned up all Anti-Noclip Fields" )
 
-	language.Add( "Tool."..TOOL_Class..".name", "Anti-Noclip Field" )
-	language.Add( "Tool."..TOOL_Class..".desc", "Disable noclip (and other actions) for players in range!" )
-	language.Add( "Tool."..TOOL_Class..".0", "Primary: Create a field, Secondary: Copy the settings of a field, Reload: Copy the model of an entity" )
+	language.Add( "Tool." .. TOOL_Class .. ".name", "Anti-Noclip Field" )
+	language.Add( "Tool." .. TOOL_Class .. ".desc", "Disable noclip (and other actions) for players in range!" )
+	language.Add( "Tool." .. TOOL_Class .. ".0", "Primary: Create a field, Secondary: Copy the settings of a field, Reload: Copy the model of an entity" )
 
-	language.Add( "Tool."..TOOL_Class..".model", "Model:" )
-	language.Add( "Tool."..TOOL_Class..".size", "Size:" )
-	language.Add( "Tool."..TOOL_Class..".size.desc", "Define the the size of the blocking field. It acts like a radius." )
-	language.Add( "Tool."..TOOL_Class..".shape", "Shape:" )
-	language.Add( "Tool."..TOOL_Class..".shape.desc", "Define the the shape of the blocking field." )
-	language.Add( "Tool."..TOOL_Class..".draw", "Draw Field" )
-	language.Add( "Tool."..TOOL_Class..".draw.desc", "Draw the borders of the field." )
-	language.Add( "Tool."..TOOL_Class..".ownercan", "Don't block the owner" )
-	language.Add( "Tool."..TOOL_Class..".ownercan.desc", "You will be able to noclip in your field.\nAdmins and Superadmins can always noclip unless it is set otherwise." )
-	language.Add( "Tool."..TOOL_Class..".active", "Active on spawn" )
+	language.Add( "Tool." .. TOOL_Class .. ".model", "Model:" )
+	language.Add( "Tool." .. TOOL_Class .. ".size", "Size:" )
+	language.Add( "Tool." .. TOOL_Class .. ".size.desc", "Define the the size of the blocking field. It acts like a radius." )
+	language.Add( "Tool." .. TOOL_Class .. ".shape", "Shape:" )
+	language.Add( "Tool." .. TOOL_Class .. ".shape.desc", "Define the the shape of the blocking field." )
+	language.Add( "Tool." .. TOOL_Class .. ".draw", "Draw Field" )
+	language.Add( "Tool." .. TOOL_Class .. ".draw.desc", "Draw the borders of the field." )
+	language.Add( "Tool." .. TOOL_Class .. ".ownercan", "Don't block the owner" )
+	language.Add( "Tool." .. TOOL_Class .. ".ownercan.desc", "You will be able to noclip in your field.\nAdmins and Superadmins can always noclip unless it is set otherwise." )
+	language.Add( "Tool." .. TOOL_Class .. ".active", "Active on spawn" )
 
-	language.Add( "Tool."..TOOL_Class..".adminonly", "Only Admins:" )
-	language.Add( "Tool."..TOOL_Class..".adminonly.desc", "These extra options are admin only by default. The ConVar 'sv_anti_noclip_field_freeforall 1' makes them usable by everyone." )
-	language.Add( "Tool."..TOOL_Class..".admincan", "Don't block admins" )
-	language.Add( "Tool."..TOOL_Class..".admincan.desc", "Other admins will be able to to noclip in your field. Superadmins can always noclip by default.\nThe ConVar 'sv_anti_noclip_field_blocksuperadmin 1' will enable the blocks for superadmins too." )
+	language.Add( "Tool." .. TOOL_Class .. ".adminonly", "Only Admins:" )
+	language.Add( "Tool." .. TOOL_Class .. ".adminonly.desc", "These extra options are admin only by default. The ConVar 'sv_anti_noclip_field_freeforall 1' makes them usable by everyone." )
+	language.Add( "Tool." .. TOOL_Class .. ".admincan", "Don't block admins" )
+	language.Add( "Tool." .. TOOL_Class .. ".admincan.desc", "Other admins will be able to to noclip in your field. Superadmins can always noclip by default.\nThe ConVar 'sv_anti_noclip_field_blocksuperadmin 1' will enable the blocks for superadmins too." )
 
 	for index, setting in pairs( ANCF.SettingsNames or {} ) do
-		local id = "disable_"..setting.name
+		local id = "disable_" .. setting.name
 
-		language.Add( "Tool."..TOOL_Class.."."..id, setting.lang[1] )
-		language.Add( "Tool."..TOOL_Class.."."..id..".desc", setting.lang[2] )
+		language.Add( "Tool." .. TOOL_Class .. "." .. id, setting.lang[1] )
+		language.Add( "Tool." .. TOOL_Class .. "." .. id .. ".desc", setting.lang[2] )
 	end
 
-	language.Add( "Tool."..TOOL_Class..".protectfromoutside", "Block actions from the outside too." )
-	language.Add( "Tool."..TOOL_Class..".protectfromoutside.desc", "If not ticked, only players inside the field will be blocked.\nIf ticked, player actions from outside the proprotected area are blocked aswell." )
+	language.Add( "Tool." .. TOOL_Class .. ".protectfromoutside", "Block actions from the outside too." )
+	language.Add( "Tool." .. TOOL_Class .. ".protectfromoutside.desc", "If not ticked, only players inside the field will be blocked.\nIf ticked, player actions from outside the proprotected area are blocked aswell." )
 
-	language.Add( "Tool."..TOOL_Class..".clientoptions", "Client options:" )
-	language.Add( "Tool."..TOOL_Class..".clientoptions.desc", "These options will affect only you and are not saved in the entity. They are applied immediately." )
-	language.Add( "Tool."..TOOL_Class..".force", "Always be affected" )
-	language.Add( "Tool."..TOOL_Class..".force.desc", "It will force all noclip fields to always Block you if you are in range. It overrides the settings them. It's usefull for testing." )
-	language.Add( "Tool."..TOOL_Class..".hidefields", "Hide all Fields" )
-	language.Add( "Tool."..TOOL_Class..".hidefields.desc", "Hide the borders of all fields." )
+	language.Add( "Tool." .. TOOL_Class .. ".clientoptions", "Client options:" )
+	language.Add( "Tool." .. TOOL_Class .. ".clientoptions.desc", "These options will affect only you and are not saved in the entity. They are applied immediately." )
+	language.Add( "Tool." .. TOOL_Class .. ".force", "Always be affected" )
+	language.Add( "Tool." .. TOOL_Class .. ".force.desc", "It will force all noclip fields to always Block you if you are in range. It overrides the settings them. It's usefull for testing." )
+	language.Add( "Tool." .. TOOL_Class .. ".hidefields", "Hide all Fields" )
+	language.Add( "Tool." .. TOOL_Class .. ".hidefields.desc", "Hide the borders of all fields." )
 
-	CreateClientConVar( TOOL_Class.."_force", "0", true, true )
-	CreateClientConVar( TOOL_Class.."_hidefields", "0", true, true )
+	CreateClientConVar( TOOL_Class .. "_force", "0", true, true )
+	CreateClientConVar( TOOL_Class .. "_hidefields", "0", true, true )
 end
 
 if SERVER then
-	CreateConVar( "sbox_max"..TOOL_Class, 20 )
+	CreateConVar( "sbox_max" .. TOOL_Class, 20 )
 end
 
 TOOL.ClientConVar[ "model" ] = "models/props_junk/TrafficCone001a.mdl"
@@ -120,7 +108,7 @@ TOOL.ClientConVar[ "active" ] = "1"
 TOOL.ClientConVar[ "admincan" ] = "1"
 
 for index, setting in pairs( ANCF.SettingsNames or {} ) do
-	TOOL.ClientConVar["disable_"..setting.name] = setting.ConVar
+	TOOL.ClientConVar["disable_" .. setting.name] = setting.ConVar
 end
 
 TOOL.ClientConVar[ "protectfromoutside" ] = "0"
@@ -149,9 +137,9 @@ local AntiNoclipFieldModels = {
 }
 
 local function ValidEditEntity( ent, ply )
-	if ( !IsValid( ent ) ) then return false end
-	if ( !IsValid( ply ) ) then return false end
-	if ( ent:GetClass() ~= "sent_"..TOOL_Class ) then return false end
+	if ( not IsValid( ent ) ) then return false end
+	if ( not IsValid( ply ) ) then return false end
+	if ( ent:GetClass() ~= "sent_" .. TOOL_Class ) then return false end
 	if ( ent.pl ~= ply ) then return false end
 
 	return true
@@ -198,7 +186,7 @@ local function CalcSpawnPos( ent, IsWall, hitpos, hitnormal, normal )
 	local center = (rmin + rmax) / 2
 
 	local Pos = hitpos - center
-	Pos = Pos + ( size.z / 2 * normal.z + size.y / 2 * normal.y + size.x / 2 * normal.x ) * normal // Todo: Something propper
+	Pos = Pos + ( size.z / 2 * normal.z + size.y / 2 * normal.y + size.x / 2 * normal.x ) * normal -- Todo: Something propper
 
 	/*debugoverlay.Cross( hitpos, 10, 0.1, Color(0,255,255), false )
 	debugoverlay.Cross( Pos, 10, 0.1, Color(255,0,0), false )
@@ -212,15 +200,15 @@ local function CalcSpawnPos( ent, IsWall, hitpos, hitnormal, normal )
 end
 
 local function advWeld( ent, traceEntity, tracePhysicsBone, DOR, collision, AllowWorldWeld )
-	if ( !SERVER ) then return end
-	if ( !IsValid( ent ) ) then return end
+	if ( not SERVER ) then return end
+	if ( not IsValid( ent ) ) then return end
 	if ( IsValid( traceEntity ) and ( traceEntity:IsNPC() or traceEntity:IsPlayer() ) ) then return end
 
 	local phys = ent:GetPhysicsObject()
-	if ( AllowWorldWeld or ( IsValid( traceEntity ) and !traceEntity:IsWorld() ) ) then
-		local const = constraint.Weld( ent, traceEntity, 0, tracePhysicsBone, 0, !collision, DOR )
-		// Don't disable collision if it's not attached to anything
-		if ( !collision ) then
+	if ( AllowWorldWeld or ( IsValid( traceEntity ) and not traceEntity:IsWorld() ) ) then
+		local const = constraint.Weld( ent, traceEntity, 0, tracePhysicsBone, 0, not collision, DOR )
+		-- Don't disable collision if it's not attached to anything
+		if ( not collision ) then
 			if IsValid( phys ) then phys:EnableCollisions( false ) end
 			ent.nocollide = true
 		end
@@ -232,17 +220,17 @@ local function advWeld( ent, traceEntity, tracePhysicsBone, DOR, collision, Allo
 end
 
 local function EditAntiNoclipField( ent, data )
-	if !SERVER then return end
+	if not SERVER then return end
 
 	ent:SetSizeInt( data.size )
 	ent:SetShapeInt( data.shape )
 	ent:SetDrawBordersBool( data.draw )
 
-	ent:SetAffectOwnerBool( !data.ownercan )
-	ent:SetAffectAdminBool( !data.admincan )
+	ent:SetAffectOwnerBool( not data.ownercan )
+	ent:SetAffectAdminBool( not data.admincan )
 
 	for index, setting in pairs( ANCF.SettingsNames or {}  ) do
-		local func = ent["SetDisable"..setting.funcname.."Bool"]
+		local func = ent["SetDisable" .. setting.funcname .. "Bool"]
 
 		if func then
 			func( ent, data.disabletab[setting.name] )
@@ -255,16 +243,16 @@ local function EditAntiNoclipField( ent, data )
 end
 
 local function MakeAntiNoclipField( pl, Pos, Ang, model, data, nocollide )
-	if !SERVER then return end
-	if !ANCF.Installed then return end
+	if not SERVER then return end
+	if not ANCF.Installed then return end
 
 	if IsValid( pl ) then
-		if ANCF.IsAdminOnly() and !pl:IsAdmin() then return end // Fixes dupe exploit
-		if !pl:CheckLimit( TOOL_Class ) then return end
+		if ANCF.IsAdminOnly() and not pl:IsAdmin() then return end -- Fixes dupe exploit
+		if not pl:CheckLimit( TOOL_Class ) then return end
 	end
 
-	local ent = ents.Create( "sent_"..TOOL_Class )
-	if !IsValid( ent ) then return end
+	local ent = ents.Create( "sent_" .. TOOL_Class )
+	if not IsValid( ent ) then return end
 
 	ent:SetPos( Pos )
 	ent:SetAngles( Ang )
@@ -284,7 +272,7 @@ local function MakeAntiNoclipField( pl, Pos, Ang, model, data, nocollide )
 		ent:SetAdminMode( true )
 	end
 
-	ent:SetDisabledBool( !data.active )
+	ent:SetDisabledBool( not data.active )
 
 	if ( nocollide == true ) then ent:GetPhysicsObject():EnableCollisions( false ) end
 
@@ -303,26 +291,26 @@ local function MakeAntiNoclipField( pl, Pos, Ang, model, data, nocollide )
 end
 
 if SERVER then
-	duplicator.RegisterEntityClass( "sent_"..TOOL_Class, MakeAntiNoclipField, "Pos", "Ang", "Model", "settings", "nocollide" )
+	duplicator.RegisterEntityClass( "sent_" .. TOOL_Class, MakeAntiNoclipField, "Pos", "Ang", "Model", "settings", "nocollide" )
 end
 
 function TOOL:LeftClick( trace )
-	if !trace.Hit then return false end
-	if !trace.HitPos then return false end
+	if not trace.Hit then return false end
+	if not trace.HitPos then return false end
 
 	local ent = trace.Entity
 	if IsValid( ent ) and ent:IsPlayer() then return false end
 
 	local ply = self:GetOwner()
-	if ( !IsValid( ply ) ) then return false end
+	if ( not IsValid( ply ) ) then return false end
 
-	if !ANCF.Installed then
+	if not ANCF.Installed then
 		ply:PrintMessage( HUD_PRINTTALK, ( ANCF.Addonname or "" ) .. ( ANCF.ErrorString or "" ) .. "\nAnti-Noclip Field not Loaded!" )
 
 		return false
 	end
 
-	if ANCF.IsAdminOnly() and !ply:IsAdmin() then
+	if ANCF.IsAdminOnly() and not ply:IsAdmin() then
 		ply:PrintMessage( HUD_PRINTTALK, "The Anti-Noclip Field tool is admin only on this server." )
 
 		return false
@@ -330,8 +318,8 @@ function TOOL:LeftClick( trace )
 
 
 	if CLIENT then return true end
-	if ( !util.IsValidPhysicsObject( ent, trace.PhysicsBone ) ) then return false end
-	if ( IsValid( ent ) and !util.IsValidPhysicsObject( ent, trace.PhysicsBone ) ) then return false end
+	if ( not util.IsValidPhysicsObject( ent, trace.PhysicsBone ) ) then return false end
+	if ( IsValid( ent ) and not util.IsValidPhysicsObject( ent, trace.PhysicsBone ) ) then return false end
 
 
 	local data = {}
@@ -345,19 +333,19 @@ function TOOL:LeftClick( trace )
 	local disabletab = {}
 
 	for index, setting in pairs( ANCF.SettingsNames or {} ) do
-		disabletab[setting.name] = self:GetClientNumber( "disable_"..setting.name ) ~= 0
+		disabletab[setting.name] = self:GetClientNumber( "disable_" .. setting.name ) ~= 0
 	end
 
 	data.disabletab = disabletab
 	data.outsideprotect = self:GetClientNumber( "protectfromoutside" ) ~= 0
 
 	if ( ValidEditEntity( ent, ply ) ) then
-		EditAntiNoclipField( ent, data ) // Update
+		EditAntiNoclipField( ent, data ) -- Update
 		return true
 	end
 
-	// Create
-	if ( !self:GetSWEP():CheckLimit( TOOL_Class ) ) then return false end
+	-- Create
+	if ( not self:GetSWEP():CheckLimit( TOOL_Class ) ) then return false end
 
 	local model = self:GetModel()
 	local Ang, IsWall, Normal = CalcSpawnAngle( trace.HitNormal, ply:GetAngles(), model )
@@ -381,9 +369,9 @@ function TOOL:LeftClick( trace )
 	return true
 end
 function TOOL:SetClientInfo( ply, name, var )
-	if !IsValid( ply ) then return end
+	if not IsValid( ply ) then return end
 
-	ply:ConCommand( TOOL_Class.."_"..name.." "..tostring( var ) )
+	ply:ConCommand( TOOL_Class .. "_" .. name .. " " .. tostring( var ) )
 end
 function TOOL:SetClientNumber( ply, name, var )
 	self:SetClientInfo( ply, name, tonumber( var ) or 0 )
@@ -395,37 +383,37 @@ end
 
 
 function TOOL:RightClick( trace )
-	if !trace.Hit then return false end
+	if not trace.Hit then return false end
 
 	local ent = trace.Entity
 	local ply = self:GetOwner()
-	if ( !IsValid( ply ) ) then return false end
+	if ( not IsValid( ply ) ) then return false end
 
-	if !ANCF.Installed then
+	if not ANCF.Installed then
 		ply:PrintMessage( HUD_PRINTTALK, ( ANCF.Addonname or "" ) .. ( ANCF.ErrorString or "" ) .. "\nAnti-Noclip Field not Loaded!" )
 
 		return false
 	end
 
-	if ( !ValidEditEntity( ent, ply ) ) then return false end
+	if ( not ValidEditEntity( ent, ply ) ) then return false end
 	if ( CLIENT ) then return true end
-	if ( !util.IsValidPhysicsObject( ent, trace.PhysicsBone ) ) then return false end
+	if ( not util.IsValidPhysicsObject( ent, trace.PhysicsBone ) ) then return false end
 
 	self:SetClientNumber( ply, "size", ent:GetSizeInt() )
 	self:SetClientInfo( ply, "shape", ShapeOptionsToString[ent:GetShapeInt()] or ShapeOptionsToString[0] )
-	self:SetClientBool( ply, "ownercan", !ent:GetAffectOwnerBool() )
-	self:SetClientBool( ply, "admincan", !ent:GetAffectAdminBool() )
+	self:SetClientBool( ply, "ownercan", not ent:GetAffectOwnerBool() )
+	self:SetClientBool( ply, "admincan", not ent:GetAffectAdminBool() )
 	self:SetClientBool( ply, "draw", ent:GetDrawBordersBool() )
 
 	for index, setting in pairs( ANCF.SettingsNames or {} ) do
-		local func = ent["GetDisable"..setting.funcname.."Bool"]
+		local func = ent["GetDisable" .. setting.funcname .. "Bool"]
 		local var = false
 
 		if func then
 			var = func( ent )
 		end
 
-		self:SetClientBool( ply, "disable_"..setting.name, var )
+		self:SetClientBool( ply, "disable_" .. setting.name, var )
 	end
 
 	self:SetClientBool( ply, "protectfromoutside", ent:GetOutsideProtectBool() )
@@ -434,12 +422,12 @@ function TOOL:RightClick( trace )
 end
 
 function TOOL:Reload( trace )
-	if !trace.Hit then return false end
+	if not trace.Hit then return false end
 
 	local ply = self:GetOwner()
-	if ( !IsValid( ply ) ) then return false end
+	if ( not IsValid( ply ) ) then return false end
 
-	if !ANCF.Installed then
+	if not ANCF.Installed then
 		ply:PrintMessage( HUD_PRINTTALK, ( ANCF.Addonname or "" ) .. ( ANCF.ErrorString or "" ) .. "\nAnti-Noclip Field not Loaded!" )
 
 		return false
@@ -447,16 +435,16 @@ function TOOL:Reload( trace )
 
 	local ent = trace.Entity
 
-	if ( !IsValid( ent ) ) then return false end
+	if ( not IsValid( ent ) ) then return false end
 	if ent:IsPlayer() then return false end
 	if ent:IsNPC() then return false end
 
 	if ( CLIENT ) then return true end
-	if ( !util.IsValidPhysicsObject( ent, trace.PhysicsBone ) ) then return false end
-	if ( ent:GetPhysicsObjectCount() > 1 ) then return false end // No ragdolls!
+	if ( not util.IsValidPhysicsObject( ent, trace.PhysicsBone ) ) then return false end
+	if ( ent:GetPhysicsObjectCount() > 1 ) then return false end -- No ragdolls!
 
 	local model = ent:GetModel()
-	if ( UTIL_IsUselessModel( model ) ) then return false end
+	if ( IsUselessModel( model ) ) then return false end
 
 	self:SetClientInfo( ply, "model", model )
 
@@ -465,12 +453,12 @@ end
 
 
 function TOOL:UpdateGhostAntiNoclipField( ent, player, model )
-	if !ANCF.Installed then return end
-	if !IsValid( ent ) then return end
-	if !IsValid( player ) then return end
+	if not ANCF.Installed then return end
+	if not IsValid( ent ) then return end
+	if not IsValid( player ) then return end
 
 	local trace = player:GetEyeTrace()
-	if !trace.Hit then return end
+	if not trace.Hit then return end
 
 	local hitent = trace.Entity
 	if ( ValidEditEntity( hitent, player ) ) then
@@ -491,16 +479,16 @@ local Vec_Zero = Vector()
 local Ang_Zero = Angle()
 
 function TOOL:Think()
-	if !ANCF.Installed then return end
+	if not ANCF.Installed then return end
 
 	local model = self:GetModel()
 
-	if !IsValid( self.GhostEntity ) then
+	if not IsValid( self.GhostEntity ) then
 		self:MakeGhostEntity( Model( model ), Vec_Zero, Ang_Zero )
 	end
 
-	if !IsValid( self.GhostEntity ) then return end
-	if self.GhostEntity:GetModel() != model then
+	if not IsValid( self.GhostEntity ) then return end
+	if self.GhostEntity:GetModel() ~= model then
 		self.GhostEntity:SetModel( model )
 		self.GhostEntity:DrawShadow( false )
 	end
@@ -512,7 +500,7 @@ function TOOL:GetModel()
 	local model = "models/props_junk/TrafficCone001a.mdl"
 	local modelcheck = self:GetClientInfo( "model" )
 
-	if util.IsValidModel( modelcheck ) and util.IsValidProp( modelcheck ) and !UTIL_IsUselessModel( modelcheck ) then
+	if util.IsValidModel( modelcheck ) and util.IsValidProp( modelcheck ) and not IsUselessModel( modelcheck ) then
 		model = modelcheck
 	end
 
@@ -524,36 +512,36 @@ function TOOL:Holster()
 end
 
 function TOOL:Deploy()
-	--self:ReleaseGhostEntity()
+	-- self:ReleaseGhostEntity()
 end
 
 local function AddNumSlider( panel, command, descbool )
-	if !CLIENT then return end
+	if not CLIENT then return end
 
 	local w = panel:GetWide()
 	local NumSlider = vgui.Create( "DNumSlider" )
 	panel:AddPanel( NumSlider )
 
 	NumSlider:SetWide( w )
-	NumSlider:SetText( "#Tool."..TOOL_Class.."."..command )
+	NumSlider:SetText( "#Tool." .. TOOL_Class .. "." .. command )
 	NumSlider:SetDark( true )
-	NumSlider:SetConVar( TOOL_Class.."_"..command )
+	NumSlider:SetConVar( TOOL_Class .. "_" .. command )
 	if descbool then
-		NumSlider:SetToolTip( "#Tool."..TOOL_Class.."."..command..".desc" )
+		NumSlider:SetTooltip( "#Tool." .. TOOL_Class .. "." .. command .. ".desc" )
 	end
 
 	return NumSlider
 end
 
 local function AddCheckbox( panel, command, descbool, adminonly )
-	if !CLIENT then return end
+	if not CLIENT then return end
 
-	local CheckBox = panel:CheckBox( "#Tool."..TOOL_Class.."."..command, TOOL_Class.."_"..command )
+	local CheckBox = panel:CheckBox( "#Tool." .. TOOL_Class .. "." .. command, TOOL_Class .. "_" .. command )
 	if descbool then
-		CheckBox:SetToolTip( "#Tool."..TOOL_Class.."."..command..".desc" )
+		CheckBox:SetTooltip( "#Tool." .. TOOL_Class .. "." .. command .. ".desc" )
 	end
 
-	if !adminonly then
+	if not adminonly then
 		return CheckBox
 	end
 
@@ -577,25 +565,25 @@ local function AddCheckbox( panel, command, descbool, adminonly )
 end
 
 local function AddLabel( panel, name, descbool )
-	if !CLIENT then return end
+	if not CLIENT then return end
 
 	local w = panel:GetWide()
 	local Label = vgui.Create( "DLabel" )
 	panel:AddPanel( Label )
 
-	Label:SetText( "#Tool."..TOOL_Class.."."..name )
+	Label:SetText( "#Tool." .. TOOL_Class .. "." .. name )
 	Label:SetDark( true )
 	Label:SizeToContents()
 	Label:SetWide( w )
 	if descbool then
-		Label:SetToolTip( "#Tool."..TOOL_Class.."."..name..".desc" )
+		Label:SetTooltip( "#Tool." .. TOOL_Class .. "." .. name .. ".desc" )
 	end
 
 	return Label
 end
 
 local function AddComboBox( panel, command, options, descbool )
-	if !CLIENT then return end
+	if not CLIENT then return end
 
 	local w = panel:GetWide()
 	local textwide = 60
@@ -604,18 +592,18 @@ local function AddComboBox( panel, command, options, descbool )
 	local Panel = vgui.Create( "DPanel" )
 
 	Panel:SetSize( w, 20 )
-	Panel:SetDrawBackground( false )
+	Panel:SetPaintBackground( false )
 	if descbool then
-		Panel:SetToolTip( "#Tool."..TOOL_Class.."."..command..".desc" )
+		Panel:SetTooltip( "#Tool." .. TOOL_Class .. "." .. command .. ".desc" )
 	end
 
 	local Label = vgui.Create( "DLabel", Panel )
 
-	Label:SetText( "#Tool."..TOOL_Class.."."..command )
+	Label:SetText( "#Tool." .. TOOL_Class .. "." .. command )
 	Label:SetDark( true )
 	Label:SetWide( textwide )
 	if descbool then
-		Label:SetToolTip( "#Tool."..TOOL_Class.."."..command..".desc" )
+		Label:SetTooltip( "#Tool." .. TOOL_Class .. "." .. command .. ".desc" )
 	end
 
 	local ComboBox = vgui.Create( "DComboBox", Panel )
@@ -629,7 +617,7 @@ local function AddComboBox( panel, command, options, descbool )
 
 	local Oldchoise = nil
 	ComboBox.Think = function( panel )
-		local choise = ply:GetInfo( TOOL_Class.."_"..command )
+		local choise = ply:GetInfo( TOOL_Class .. "_" .. command )
 
 		if Oldchoise ~= choise then
 			Oldchoise = choise
@@ -641,7 +629,7 @@ local function AddComboBox( panel, command, options, descbool )
 		if Oldchoise == value then return end
 		Oldchoise = value
 
-		ply:ConCommand( TOOL_Class.."_"..command.." "..value )
+		ply:ConCommand( TOOL_Class .. "_" .. command .. " " .. value )
 	end
 
 	local PerformLayout = Panel.PerformLayout
@@ -664,7 +652,7 @@ end
 function TOOL.BuildCPanel( panel )
 	AddLabel( panel, "desc" )
 
-	if ( !ANCF.Installed ) then
+	if ( not ANCF.Installed ) then
 		local label = vgui.Create( "DLabel" )
 
 		label:SetDark( false )
@@ -679,38 +667,38 @@ function TOOL.BuildCPanel( panel )
 
 
 	local DefaultSettings = {}
-		DefaultSettings[TOOL_Class.."_model"] = "models/props_junk/TrafficCone001a.mdl"
-		DefaultSettings[TOOL_Class.."_size"] = "256"
-		DefaultSettings[TOOL_Class.."_shape"] = ShapeOptionsToString[0]
-		DefaultSettings[TOOL_Class.."_ownercan"] = "1"
-		DefaultSettings[TOOL_Class.."_active"] = "1"
-		DefaultSettings[TOOL_Class.."_admincan"] = "1"
+		DefaultSettings[TOOL_Class .. "_model"] = "models/props_junk/TrafficCone001a.mdl"
+		DefaultSettings[TOOL_Class .. "_size"] = "256"
+		DefaultSettings[TOOL_Class .. "_shape"] = ShapeOptionsToString[0]
+		DefaultSettings[TOOL_Class .. "_ownercan"] = "1"
+		DefaultSettings[TOOL_Class .. "_active"] = "1"
+		DefaultSettings[TOOL_Class .. "_admincan"] = "1"
 
 		for index, setting in pairs( ANCF.SettingsNames or {} ) do
-			DefaultSettings[TOOL_Class.."_".."disable_"..setting.name] = setting.ConVar
+			DefaultSettings[TOOL_Class .. "_" .. "disable_" .. setting.name] = setting.ConVar
 		end
 
-		DefaultSettings[TOOL_Class.."_protectfromoutside"] = "0"
-		DefaultSettings[TOOL_Class.."_force"] = "0"
-		DefaultSettings[TOOL_Class.."_draw"] = "0"
+		DefaultSettings[TOOL_Class .. "_protectfromoutside"] = "0"
+		DefaultSettings[TOOL_Class .. "_force"] = "0"
+		DefaultSettings[TOOL_Class .. "_draw"] = "0"
 
 	local CVars = {}
-		CVars[0] = TOOL_Class.."_model"
-		CVars[1] = TOOL_Class.."_size"
-		CVars[2] = TOOL_Class.."_shape"
-		CVars[3] = TOOL_Class.."_ownercan"
-		CVars[4] = TOOL_Class.."_admincan"
-		CVars[5] = TOOL_Class.."_active"
+		CVars[0] = TOOL_Class .. "_model"
+		CVars[1] = TOOL_Class .. "_size"
+		CVars[2] = TOOL_Class .. "_shape"
+		CVars[3] = TOOL_Class .. "_ownercan"
+		CVars[4] = TOOL_Class .. "_admincan"
+		CVars[5] = TOOL_Class .. "_active"
 
 		local i = 6
 		for index, setting in pairs( ANCF.SettingsNames or {} ) do
-			CVars[i] = TOOL_Class.."_".."disable_"..setting.name
+			CVars[i] = TOOL_Class .. "_" .. "disable_" .. setting.name
 			i = i + 1
 		end
 
-		CVars[i+1] = TOOL_Class.."_protectfromoutside"
-		CVars[i+2] = TOOL_Class.."_force"
-		CVars[i+3] = TOOL_Class.."_draw"
+		CVars[i + 1] = TOOL_Class .. "_protectfromoutside"
+		CVars[i + 2] = TOOL_Class .. "_force"
+		CVars[i + 3] = TOOL_Class .. "_draw"
 
 	panel:AddControl( "ComboBox", {
 		Label = "#Presets",
@@ -725,10 +713,11 @@ function TOOL.BuildCPanel( panel )
 	} )
 
 	panel:AddControl( "PropSelect", {
-		Label = "#Tool."..TOOL_Class..".model",
-		ConVar = TOOL_Class.."_model",
+		Label = "#Tool." .. TOOL_Class .. ".model",
+		ConVar = TOOL_Class .. "_model",
 		Category = TOOL_Class,
-		Models = AntiNoclipFieldModels
+		Models = AntiNoclipFieldModels,
+		height = 4,
 	} )
 
 	local NumSliderSize = AddNumSlider( panel, "size", true )
@@ -750,7 +739,7 @@ function TOOL.BuildCPanel( panel )
 
 		self:SetMax( maxsize )
 
-		self:SetValue( size-1 ) // Force update
+		self:SetValue( size - 1 ) -- Force update
 		self:SetValue( size )
 	end
 
@@ -771,15 +760,15 @@ function TOOL.BuildCPanel( panel )
 
 	for index, setting in pairs( ANCF.SettingsNames or {} ) do
 		if setting.needadmin then continue end
-		AddCheckbox( panel, "disable_"..setting.name, true, setting.needadmin )
+		AddCheckbox( panel, "disable_" .. setting.name, true, setting.needadmin )
 	end
 
 	AddLabel( panel, "adminonly", true )
 	AddCheckbox( panel, "admincan", true, true )
 
 	for index, setting in pairs( ANCF.SettingsNames or {} ) do
-		if !setting.needadmin then continue end
-		AddCheckbox( panel, "disable_"..setting.name, true, setting.needadmin )
+		if not setting.needadmin then continue end
+		AddCheckbox( panel, "disable_" .. setting.name, true, setting.needadmin )
 	end
 
 	AddCheckbox( panel, "protectfromoutside", true, true )
