@@ -13,7 +13,6 @@ local isentity = isentity
 local util = util
 local hook = hook
 local pairs = pairs
-local debug = debug
 local isfunction = isfunction
 local net = net
 local ipairs = ipairs
@@ -319,27 +318,26 @@ if SERVER then
 	end )
 end
 
-local _R = debug.getregistry()
-local ENT = _R.Entity
+local EntityMeta = FindMetaTable("Entity")
 
-function ENT:ANCF_GetGrabbedBy()
+function EntityMeta:ANCF_GetGrabbedBy()
 	if not ANCF.IsValidEntity( self ) then return end
 
 	return self.__ancf_grabbedby
 end
 
-function ENT:ANCF_GetGrabbed()
+function EntityMeta:ANCF_GetGrabbed()
 	if not ANCF.IsValidEntity( self ) then return end
 
 	return self.__ancf_grabbed
 end
 
-function ENT:ANCF_GetGrabbedWith()
+function EntityMeta:ANCF_GetGrabbedWith()
 	if not ANCF.IsValidEntity( self ) then return end
 
 	return self.__ancf_grabbed_with
 end
-function ENT:ANCF_Clear()
+function EntityMeta:ANCF_Clear()
 	if not ANCF.IsValidEntity( self ) then return end
 
 	self.__ancf_grabbedby = nil
@@ -347,9 +345,9 @@ function ENT:ANCF_Clear()
 	self.__ancf_grabbed_with = nil
 end
 
-function ENT:ANCF_DisableGodmode( bool )
+function EntityMeta:ANCF_DisableGodmode( bool )
 	if not ANCF.IsValidEntity( self ) then return end
-	if (CLIENT) then return end
+	if CLIENT then return end
 
 	if not self:IsPlayer() then return end
 
@@ -375,7 +373,7 @@ function ENT:ANCF_DisableGodmode( bool )
 	end
 end
 
-function ENT:ANCF_SetInField( bool )
+function EntityMeta:ANCF_SetInField( bool )
 	if not ANCF.IsValidEntity( self ) then return end
 
 	if bool then
@@ -385,13 +383,13 @@ function ENT:ANCF_SetInField( bool )
 	end
 end
 
-function ENT:ANCF_GetInField()
+function EntityMeta:ANCF_GetInField()
 	if not ANCF.IsValidEntity( self ) then return false end
 
 	return self.__ancf_infield or false
 end
 
-function ENT:ANCF_GetOwner()
+function EntityMeta:ANCF_GetOwner()
 	if not ANCF.IsValidEntity( self ) then return nil end
 	if self:IsPlayer() then return self end
 
@@ -425,7 +423,7 @@ function ENT:ANCF_GetOwner()
 	return nil
 end
 
-function ENT:ANCF_SetOwner( ent )
+function EntityMeta:ANCF_SetOwner( ent )
 	if not ANCF.IsValidEntity( self ) then return end
 	if self:IsPlayer() then return end
 	if not IsValid(ent) then return end
@@ -433,7 +431,6 @@ function ENT:ANCF_SetOwner( ent )
 	self.__ancf_owner = ent
 end
 
-_R.Entity = ENT
 if CLIENT then
 	net.Receive( "__ANCF_InField", function( length )
 		local self = net.ReadEntity()
